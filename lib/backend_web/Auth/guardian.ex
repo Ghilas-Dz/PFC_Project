@@ -10,19 +10,19 @@ defmodule BackendWeb.Auth.Guardian do
   def resource_from_claims(claims) do
     id = claims["sub"]
 
-    case Accounts.get_user!(id) do
+    case Accounts.get_utilisateur!(id) do
       nil -> {:error, :resource_not_found}
       user -> {:ok, user}
     end
   end
 
   def authenticate_user(email, password) do
-    case Accounts.get_account_by_email(email) do
+    case Accounts.get_utilisateur_by_email(email) do
       nil ->
         {:error, :invalid_credentials}
 
       account ->
-        if Bcrypt.verify_pass(password, account.password_hash) do
+        if Bcrypt.verify_pass(password, account.mot_de_passe) do
           generate_token(account)
         else
           {:error, :invalid_credentials}

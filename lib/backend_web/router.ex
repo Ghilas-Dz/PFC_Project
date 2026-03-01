@@ -12,6 +12,8 @@ defmodule BackendWeb.Router do
 
   scope "/api", BackendWeb do
     pipe_through(:api)
+    post("/auth/register", AccountController, :create)
+    post("/auth/login", AccountController, :login)
   end
 
   scope "/api/auth", BackendWeb do
