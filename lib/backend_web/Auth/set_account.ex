@@ -3,22 +3,39 @@ defmodule BackendWeb.Auth.SetAccount do
   alias BackendWeb.Auth.ErrorResponse
   alias Backend.Accounts
 
-  def init(_opts) do
-  end
+  def init(opts), do: opts
 
-  def call(conn, _opt) do
-    if conn.assigns[:account] do
-      conn
-    else
-      account_id = get_session(conn, :account_id)
-
-      if account_id == nil, do: raise(ErrorResponse.Unauthorized)
-      account = Accounts.get_account!(account_id)
-
+  def call(conn, _opts) do
+    account =
       cond do
-        account_id && account -> assign(conn, :account, account)
-        true -> assign(conn, :account, nil)
+        conn.assigns[:account] ->
+          conn.assigns[:account]
+
+        account = Guardian.Plug.current_resource(conn) ->
+          account
+
+        account_id = get_session(conn, :id) ->
+          Accounts.get_utilisateur!(account_id)
+
+        true ->
+          raise(ErrorResponse.Unauthorized)
       end
+
+    conn = assign(conn, :account, account)
+
+    # Vérifier si la route contient un paramètre "id"
+    # et comparer avec l'ID du compte courant
+    case conn.params["id"] do
+      nil ->
+        # pas de vérification nécessaire
+        conn
+
+      resource_id ->
+        if to_string(account.id) != to_string(resource_id) do
+          raise(ErrorResponse.Unauthorized)
+        else
+          conn
+        end
     end
   end
 end
