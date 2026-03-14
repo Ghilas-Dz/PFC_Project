@@ -43,6 +43,11 @@ config :backend, BackendWeb.Auth.Guardian,
   issuer: "backend",
   secret_key: "FW-l8IkMO2GBo2pMwXM-xFJEVDkxJVKNG7y68PFuEn_wPZWvkks8xIgidEP7MvB5"
 
+config :guardian, Guardian.DB,
+  repo: Backend.Repo,
+  schema_name: "guardian_tokens",
+  sweep_interval: 60
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

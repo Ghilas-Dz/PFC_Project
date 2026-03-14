@@ -3,6 +3,7 @@ defmodule BackendWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
+    plug(:fetch_session)
   end
 
   pipeline :auth do
@@ -12,10 +13,32 @@ defmodule BackendWeb.Router do
 
   scope "/api", BackendWeb do
     pipe_through(:api)
+
+    post("/etudiant/register", AccountController, :create_etudiant)
+    post("/professeur/register", AccountController, :create_professeur)
+    post("/login", AccountController, :login)
+  end
+
+  scope "/api/auth/etudiant", BackendWeb do
+    pipe_through([:api, :auth])
+  end
+
+  scope "/api/auth/professeur", BackendWeb do
+    pipe_through([:api, :auth])
+  end
+
+  scope "/api/auth/admin", BackendWeb do
+    pipe_through([:api, :auth])
   end
 
   scope "/api/auth", BackendWeb do
     pipe_through([:api, :auth])
+
+    post("/accounts/update", AccountController, :update)
+    delete("/sign_out", AccountController, :sign_out)
+    get("/sign_out", AccountController, :sign_out)
+    post("/accounts/refresh", AccountController, :refresh_session)
+    get("/accounts/refresh", AccountController, :refresh_session)
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
