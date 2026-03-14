@@ -1,5 +1,7 @@
 # Backend
 
+> **Note:** The default branch for this repository is `main`.
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
